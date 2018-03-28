@@ -48,15 +48,17 @@ export default {
       signForm: {
         pass: "",
         checkPass: "",
-        username:"",
-        email:""
+        username: "",
+        email: ""
       },
       signRules: {
-        pass: [{ validator: validatePass, trigger: "blur" },{ required: true}],
-        checkPass: [{ validator: validatePass2, trigger: "blur" },{ required: true}],
-        username:[{ required: true, message: '用户名不能为空'}],
-        email:[ { required: true, message: '请输入邮箱地址', trigger: 'blur' },
-      { type: 'email', message: '请输入正确的邮箱地址', trigger: 'blur,change' }]
+        pass: [{ validator: validatePass, trigger: "blur" }],
+        checkPass: [{ validator: validatePass2, trigger: "blur" }],
+        username: [{ required: true, message: "请输入用户名" }],
+        email: [
+          { required: true, message: "请输入邮箱地址", trigger: "blur" },
+          // { type: "email", message: "请输入正确的邮箱地址", trigger: "blur" }
+        ]
       }
     };
   },
@@ -64,36 +66,39 @@ export default {
     submitForm(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
-          let user=new this.$api.AV.User();
+          let user = new this.$api.AV.User();
           user.setUsername(this.signForm.username);
           user.setPassword(this.signForm.pass);
           user.setEmail(this.signForm.email);
-          user.signUp().then((loginUser)=>{
-              this.$store.commit('setUser',loginUser);
+          user
+            .signUp()
+            .then(loginUser => {
+              this.$store.dispatch("login", loginUser);//组件中分发action
               this.$router.go(-1);
-              this.$message.success("注册成功")
-          }).catch(error=>{
+              this.$message.success("注册成功");
+            })
+            .catch(error => {
               console.error(error);
               this.$message.error(error.message);
-          })
+            });
         } else {
           console.log("error submit!!");
           return false;
         }
       });
-    },
-    resetForm(formName) {
-      this.$refs[formName].resetFields();
     }
   }
 };
 </script>
 <style lang="less" scoped>
-.container{
-    width: 400px;
-    h2{
-        text-align: center;
-    }
+.container {
+  width: 400px;
+  margin: auto;
+
+  h2 {
+    position: relative;
+    left: 100px;
+  }
 }
 </style>
 

@@ -1,9 +1,7 @@
 <template>
   <div class="hello">
     <h1>{{ msg }}</h1>
-    <h2>Essential Links</h2>
-    <button @click="testApi">testApi</button>
-    
+    <h2>Essential Links</h2>    
   </div>
 </template>
 
@@ -14,19 +12,6 @@ export default {
     return {
       msg: "Welcome to Your Vue.js App"
     };
-  },
-  methods: {
-    testApi() {
-      // var TestObject = this.$api.AV.Object.extend("TestObject");
-      // var testObject = new TestObject();
-      // testObject
-      //   .save({
-      //     words: "Hello World!"
-      //   })
-      //   .then(function(object) {
-      //     alert("LeanCloud Rocks!");
-      //   });
-    }
   }
 };
 </script>

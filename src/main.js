@@ -21,6 +21,11 @@ Vue.mixin({
     }
   }
 })
+//持久化登陆
+const user =api.AV.User.current();
+if(user){
+  store.commit('setUser',user);
+}
 const options = {
   color: '#bffaf3',
   failedColor: '#874b4b',
