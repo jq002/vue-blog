@@ -8,7 +8,7 @@ const store=new Vuex.Store({
     state:{
         user:{}
     },
-    mutation:{
+    mutations:{
         setUser(state,user){
             state.user=user;
         }
