@@ -9,10 +9,25 @@ import App from './App'
 import router from './router'
 import store from './store'
 import api from './api'
+import '@/assets/global.css'
 
 Vue.config.productionTip = false
 
 localStorage.setItem('debug','leancloud*')
+
+router.beforeEach((to,from,next)=>{
+  if(to.matched.some(record=>record.meta.needLogin)){
+    if(!store.state.user){
+      app.$message.error("请先登录");
+      next({path:'/login',})
+    }else{
+      next();
+    }
+  }else{
+    next();
+  }
+
+})
 
 Vue.mixin({
   beforeCreate(){
@@ -44,7 +59,7 @@ Vue.use(VueProgressBar, options)
 Vue.use(ElementUI);
 
 /* eslint-disable no-new */
-new Vue({
+const app=new Vue({
   el: '#app',
   router,
   store,

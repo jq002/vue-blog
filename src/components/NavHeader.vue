@@ -8,19 +8,16 @@
     <el-menu-item index="2-2">图片</el-menu-item>
     <el-menu-item index="2-3">杂项</el-menu-item>
   </el-submenu>
-
-  <template v-if="!user||Object.keys(user).length === 0 && user.constructor === Object">
-
+  <template v-if="!user">
     <el-menu-item index="/signup" class="el-menu__signup"><i class="fa fa-user-circle" aria-hidden="true"></i>注册</el-menu-item>
     <el-menu-item index="/login" class="el-menu__login"><i class="fa fa-paper-plane" aria-hidden="true"></i>登录</el-menu-item>
-
-      </template>
-    <template v-else>
+  </template>
+  <template v-else>
     <el-menu-item index="6" class="el-menu__loginout" @click="handleExit"> 退出</el-menu-item>
     <el-submenu index="5" class="el-menu__options">
       <span slot="title">{{user.getUsername()}}</span>
       <el-menu-item index="5-1">个人中心</el-menu-item>
-      <el-menu-item index="5-2">发布文章</el-menu-item>
+      <el-menu-item index="/article/create">发布文章</el-menu-item>
       <el-menu-item index="5-3">消息</el-menu-item>
     </el-submenu>
   </template>
