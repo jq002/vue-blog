@@ -4,7 +4,7 @@
   <el-menu-item index="/"><i class="fa fa-home" aria-hidden="true"></i>琵琶</el-menu-item>
   <el-submenu index="2">
     <template slot="title">探索</template>
-    <el-menu-item index="/list">热门文章</el-menu-item>
+    <el-menu-item index="/article?type=all">所有文章</el-menu-item>
     <el-menu-item index="2-2">图片</el-menu-item>
     <el-menu-item index="2-3">杂项</el-menu-item>
   </el-submenu>
@@ -18,7 +18,7 @@
       <span slot="title">{{user.getUsername()}}</span>
       <el-menu-item index="5-1">个人中心</el-menu-item>
       <el-menu-item index="/article/create">发布文章</el-menu-item>
-      <el-menu-item index="5-3">消息</el-menu-item>
+      <el-menu-item index="/article?type=me">我的文章</el-menu-item>
     </el-submenu>
   </template>
 </el-menu>
