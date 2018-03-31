@@ -6,6 +6,7 @@ import SignUp from '@/pages/SignUp'
 import Login from '@/pages/Login'
 import ArticleCreate from '@/pages/article/create'
 import ArticleShow from '@/pages/article/show'
+import ArticleEdit from '@/pages/article/edit'
 
 Vue.use(Router)
 
@@ -28,9 +29,20 @@ export default new Router({
       name: 'Login',
       component: Login
     },{
-       path:'/article/show',
+       path:'/article/show/:id',
        name:'ArticleShow',
        component:ArticleShow,
-    }
+    },{
+      path:'/article/create',
+      name:'ArticleCreate',
+      component:ArticleCreate,
+      meta:{
+        needLogin:true
+      }
+    },{
+      path:'/article/show/:id/edit/:id',
+      name:'ArticleEdit',
+      component:ArticleEdit,
+   },
   ]
 })

@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-      <h3 class="title is-3">发布一篇新的文章</h3>
+      <h3 class="title is-3">{{article.get('title')}}</h3>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px" label-position="top">
         <el-form-item label="文章分类" prop="category">
           <el-select v-model="form.category" value-key="id" placeholder="请选择文章分类">
@@ -32,6 +32,7 @@ export default {
   data() {
     return {
       categorys: [],
+      article: null,
       form: {
         category: null,
         title: ""
@@ -57,13 +58,26 @@ export default {
   computed: mapState(["user"]),
   created() {
     this.getCategory();
+    const id = this.$route.params.id;
+    this.getArticle(id);
   },
   mounted() {
     this.initEditor(); //在挂载完成后初始化（需要DOM节点）富文本编辑器
   },
+//   watch:{
+//       'this.categorys.length'(){
+//           const index=this.categorys.findIndex(c=>cid==id);
+//           this.form.category=this.categorys[index];
+
+//       }
+
+//   },
   methods: {
-    content() {
+    getContent() {
       return editor.txt.html();
+    },
+    setContent(html){
+        // editor.txt.html(html)
     },
     initEditor() {
       let E = window.wangEditor;
@@ -73,20 +87,52 @@ export default {
         this.validateContent();
       };
     },
+    wait(flag){
+        console.log(flag)
+        return new Promise((resolve,reject)=>{
+            let timer=null;
+            if(flag){
+                resolve();
+            }else{
+                timer=setInterval(()=>{
+                    if(!flag) return;
+                    resolve()
+                    clearInterval(timer);
+                },500)
+            }
+        })
+    },
+    getArticle(id) {
+      const q = new this.$api.AV.Query("Article");
+      q.include("category");
+      q.include("author");
+      q
+        .get(id)
+        .then(article => {
+          this.article = article;
+          this.form.title=article.get('title');
+          this.form.category=article.get('category');
+          this.wait(editor).then(()=>{
+          this.setContent(this.article.get('content'));
+          this.$Progress.finish();
+
+          })
+        })
+        .catch(console.log);
+    },
     getCategory() {
       const cq = new this.$api.AV.Query("Category");
       cq
         .find()
         .then(categorys => {
           this.categorys = categorys;
-          this.form.category = categorys[0];
-              this.$Progress.finish();
-
+        //   this.form.category = categorys[0];
+        //   this.$Progress.finish();
         })
         .catch(console.error);
     },
     validateContent() {
-      if (this.content() == "<p><br></p>") {
+      if (this.getContent() == "<p><br></p>") {
         this.validate.error = true;
         $(".wangEditor-container").css({ borderColor: "red" });
         return false;
@@ -96,11 +142,11 @@ export default {
         return true;
       }
     },
-    createArticle() {
-      const article = new this.$api.AV.Object("Article");
+    setArticle() {
+      const article = this.article;
       article.set("author", this.user);
       article.set("title", this.form.title);
-      article.set("content", this.content());
+      article.set("content", this.getContent());
       article.set("category", this.form.category);
       return article;
     },
@@ -117,7 +163,10 @@ export default {
           console.log(article);
           const message = `文章《${article.get("title")}》发布成功`;
           this.$message({ message, type: "success" });
-          this.$router.replace({name:'ArticleShow',params:{id:article.id}})
+          this.$router.replace({
+            name: "ArticleShow",
+            params: { id: article.id }
+          });
         })
         .catch(console.error);
     },

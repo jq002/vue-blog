@@ -31,7 +31,7 @@ export default {
     })
     this.$router.afterEach((to, from) => {
       //  finish the progress bar
-      this.$Progress.finish()
+      // this.$Progress.finish()
     })
   }
 }

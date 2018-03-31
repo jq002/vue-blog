@@ -54,6 +54,8 @@ export default {
     getMyArticles(){
       this.title="我的文章";
       const q=this.query();
+      // console.log(user);
+      q.equalTo('author',this.user);
       this.setArticles(q);
     },
     getAllArticles(){
