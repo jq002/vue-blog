@@ -41,3 +41,12 @@ user==null//X
 ```
 富文本编辑器：z-index=10001
 ```
+- 回掉的this导致问题
+```
+使用箭头函数则没有问题：
+      query.find().then(followees => {
+        this.followees = followees;
+        this.$Progress.finish();
+        //关注的用户列表 followees
+      });
+```
