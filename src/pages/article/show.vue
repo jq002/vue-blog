@@ -6,6 +6,11 @@
         <el-button type="primary" icon="el-icon-edit" @click="toEdit"></el-button>
         <el-button type="danger" icon="el-icon-delete" @click="destroy"></el-button>
       </div>
+      <div v-else class="oprate">
+        <el-button  v-if="follow" type="info"  round >已关注</el-button>
+        <el-button  v-else type="primary"  icon="el-icon-plus" round @click="toFollow">关注</el-button>
+
+      </div>
       <div class="content" v-html="article.get('content')"></div>
     </template>
   </div>
@@ -17,7 +22,8 @@ export default {
   name: "show",
   data() {
     return {
-      article: null
+      article: null,
+      follow: false
     };
   },
   computed: {
@@ -28,18 +34,49 @@ export default {
     this.getArticle(id);
   },
   methods: {
-    toEdit(){
-          this.$router.replace({name:'ArticleEdit',params:{id:this.article.id}})
+    isFollow(id) {
+      var query = this.$api.AV.User.current().followeeQuery();
+      query.find().then(followees => {
+        //关注的用户列表 followees
+        this.follow = followees.some(followee => followee.id == id);
+        this.$Progress.finish();
+
+      });
+    },
+    toFollow() {
+      const id = this.article.get("author").id;
+      this.$api.AV.User.current()
+        .follow(id)
+        .then(
+          () => {
+            this.follow = true;
+            this.$message({ type: "success", message: "已关注" });
+          },
+          err => {
+            //关注失败
+            console.dir(err);
+          }
+        );
+    },
+    toEdit() {
+      this.$router.replace({
+        name: "ArticleEdit",
+        params: { id: this.article.id }
+      });
     },
     getArticle(id) {
       const q = new this.$api.AV.Query("Article");
-      q.include('category');
-      q.include('author');
+      q.include("category");
+      q.include("author");
       q
         .get(id)
         .then(article => {
           this.article = article;
+          if(this.uid!=article.get('author').id){
+          this.isFollow(this.article.get("author").id);
+          }else{
           this.$Progress.finish();
+          }
         })
         .catch(console.log);
     },
