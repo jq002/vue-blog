@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-      <h3 class="title is-3">{{article.get('title')}}</h3>
+      <h3 class="title is-3" v-if="article">{{article.get('title')}}</h3>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px" label-position="top">
         <el-form-item label="文章分类" prop="category">
           <el-select v-model="form.category" value-key="id" placeholder="请选择文章分类">
@@ -18,7 +18,7 @@
           </div>
         </div>
           <el-form-item>
-            <el-button type="primary" @click="submit" @keyup.enter="submit">发布文章</el-button>
+            <el-button type="primary" @click="submit" @keyup.enter="submit">修改文章</el-button>
           </el-form-item>
       </el-form>
   </div>
@@ -28,7 +28,7 @@
 import { mapState } from "vuex";
 let editor = null; //文章内容，不写在data，响应式会增加开销，也会造成问题
 export default {
-  name: "create",
+  name: "edit",
   data() {
     return {
       categorys: [],
@@ -58,27 +58,13 @@ export default {
   computed: mapState(["user"]),
   created() {
     this.getCategory();
-    const id = this.$route.params.id;
-    this.getArticle(id);
+    this.getArticle();
   },
   mounted() {
     this.initEditor(); //在挂载完成后初始化（需要DOM节点）富文本编辑器
   },
-//   watch:{
-//       'this.categorys.length'(){
-//           const index=this.categorys.findIndex(c=>cid==id);
-//           this.form.category=this.categorys[index];
 
-//       }
-
-//   },
   methods: {
-    getContent() {
-      return editor.txt.html();
-    },
-    setContent(html){
-        // editor.txt.html(html)
-    },
     initEditor() {
       let E = window.wangEditor;
       editor = new E("#editor");
@@ -87,22 +73,29 @@ export default {
         this.validateContent();
       };
     },
-    wait(flag){
-        console.log(flag)
-        return new Promise((resolve,reject)=>{
-            let timer=null;
-            if(flag){
-                resolve();
-            }else{
-                timer=setInterval(()=>{
-                    if(!flag) return;
-                    resolve()
-                    clearInterval(timer);
-                },500)
-            }
-        })
+    getContent() {
+      return editor.txt.html();
     },
-    getArticle(id) {
+    setContent(html) {
+      editor.txt.html(html);
+    },
+    wait(flag) {
+      console.log(flag);
+      return new Promise((resolve, reject) => {
+        let timer = null;
+        if (flag) {
+          resolve();
+        } else {
+          timer = setInterval(() => {
+            if (!flag) return;
+            resolve();
+            clearInterval(timer);
+          }, 500);
+        }
+      });
+    },
+    getArticle() {
+      const id = this.$route.params.id;
       const q = new this.$api.AV.Query("Article");
       q.include("category");
       q.include("author");
@@ -110,13 +103,12 @@ export default {
         .get(id)
         .then(article => {
           this.article = article;
-          this.form.title=article.get('title');
-          this.form.category=article.get('category');
-          this.wait(editor).then(()=>{
-          this.setContent(this.article.get('content'));
+          this.form.title = article.get("title");
+          this.form.category = article.get("category");
+          this.wait(editor).then(() => {
+            this.setContent(this.article.get("content"));
+          });
           this.$Progress.finish();
-
-          })
         })
         .catch(console.log);
     },
@@ -126,8 +118,6 @@ export default {
         .find()
         .then(categorys => {
           this.categorys = categorys;
-        //   this.form.category = categorys[0];
-        //   this.$Progress.finish();
         })
         .catch(console.error);
     },
@@ -161,7 +151,7 @@ export default {
         .save()
         .then(article => {
           console.log(article);
-          const message = `文章《${article.get("title")}》发布成功`;
+          const message = `文章《${article.get("title")}》修改成功`;
           this.$message({ message, type: "success" });
           this.$router.replace({
             name: "ArticleShow",
@@ -174,7 +164,7 @@ export default {
       this.$refs.form.validate(valid => {
         let me = this.validateContent();
         if (valid && me) {
-          const article = this.createArticle();
+          const article = this.setArticle();
           this.setACL(article);
           this.save(article);
         } else {
