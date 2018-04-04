@@ -10,10 +10,9 @@ import router from './router'
 import store from './store'
 import api from './api'
 import '@/assets/global.css'
-
 Vue.config.productionTip = false
 
-localStorage.setItem('debug','leancloud*')
+// localStorage.setItem('debug','leancloud*')
 
 router.beforeEach((to,from,next)=>{
   if(to.matched.some(record=>record.meta.needLogin)){

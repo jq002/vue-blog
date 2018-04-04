@@ -25,7 +25,7 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapState,mapGetters } from "vuex";
 let editor = null; //文章内容，不写在data，响应式会增加开销，也会造成问题
 export default {
   name: "create",
@@ -54,7 +54,11 @@ export default {
       }
     };
   },
-  computed: mapState(["user"]),
+    computed: {
+    ...mapGetters(["uid","uname"]),
+    ...mapState(["user"])
+    },
+  // computed: mapState(["user"]),
   created() {
     this.getCategory();
   },
@@ -80,8 +84,7 @@ export default {
         .then(categorys => {
           this.categorys = categorys;
           this.form.category = categorys[0];
-              this.$Progress.finish();
-
+          this.$Progress.finish();
         })
         .catch(console.error);
     },
@@ -114,10 +117,13 @@ export default {
       article
         .save()
         .then(article => {
-          console.log(article);
           const message = `文章《${article.get("title")}》发布成功`;
           this.$message({ message, type: "success" });
-          this.$router.replace({name:'ArticleShow',params:{id:article.id}})
+          this.$router.replace({
+            name: "ArticleShow",
+            params: { id: article.id }
+          });
+          this.sendMessage(article);
         })
         .catch(console.error);
     },
@@ -134,6 +140,21 @@ export default {
           return false;
         }
       });
+    },
+    sendMessage(article) {
+      var status = new this.$api.AV.Status(null, `${this.uname}发布了《${article.get("title")}》文章`);
+      status.set("article", article);
+      status.set("articleTitle", article.get("title"));
+      this.$api.AV.Status.sendStatusToFollowers(status).then(
+        function(status) {
+          //发布状态成功，返回状态信息
+          console.dir(status);
+        },
+        function(err) {
+          //发布失败
+          console.dir(err);
+        }
+      );
     }
   }
 };

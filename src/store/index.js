@@ -12,6 +12,10 @@ const store=new Vuex.Store({
         uid({user}){
             if(user)return user.id;
             else return false;
+        },
+        uname({user}){
+            if(user)return user.get('username');
+            else return false;
         }
 
     },

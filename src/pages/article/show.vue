@@ -2,6 +2,7 @@
   <div class="container">
     <template v-if="article"> 
       <h3>{{article.get('title')}}</h3>
+      <template v-if="uid">
       <div class="oprate" v-if="uid==article.get('author').id">
         <el-button type="primary" icon="el-icon-edit" @click="toEdit"></el-button>
         <el-button type="danger" icon="el-icon-delete" @click="destroy"></el-button>
@@ -9,8 +10,8 @@
       <div v-else class="oprate">
         <el-button  v-if="follow" type="info"  round >已关注</el-button>
         <el-button  v-else type="primary"  icon="el-icon-plus" round @click="toFollow">关注</el-button>
-
       </div>
+      </template>
       <div class="content" v-html="article.get('content')"></div>
     </template>
   </div>
@@ -72,7 +73,7 @@ export default {
         .get(id)
         .then(article => {
           this.article = article;
-          if(this.uid!=article.get('author').id){
+          if(this.uid&&this.uid!=article.get('author').id){
           this.isFollow(this.article.get("author").id);
           }else{
           this.$Progress.finish();

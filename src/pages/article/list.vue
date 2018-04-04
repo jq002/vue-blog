@@ -1,32 +1,12 @@
 <template>
   <div class="container">
-    <header>
-    <h2>{{title}}</h2>
-    </header>
-    <!-- <el-card class="box-card" v-for="article in articles" :key="article.id">
-      <div slot="header" class="clearfix">
+      <h3 class="box-card" v-for="article in articles" :key="article.id">
+        <el-tag type="info">作者：{{article.get('author').get('username')}}</el-tag>
+        <el-tag type="info">{{article.get('createAt')}}</el-tag>
         <router-link :to="{ name:'ArticleShow',params:{id:article.id}}">
           {{article.get('title')}}
         </router-link>
-        <el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button>
-      </div>
-      <div class="content" v-html="article.get('content')">
-      </div>
-    </el-card> -->
-    <section>
-      <article v-for="article in articles" :key="article.id">
-        <h3>
-          <router-link :to="{ name:'ArticleShow',params:{id:article.id}}">
-            {{article.get('title')}}
-          </router-link>
-          <el-tag  style="float: right;" >作者：{{article.get('author').get('username')}}</el-tag>
-           <!-- <el-button style="float: right;" icon="el-icon-star-off" circle></el-button> -->
-        </h3>
-        <div class="content" v-html="article.get('content')">
-           
-        </div>
-      </article>
-    </section>
+      </h3>
   </div>
 </template>
 
@@ -112,16 +92,19 @@ export default {
 </script>
 
 <style scoped>
-h3{
-  margin:  0;
+h3 {
+  margin: 10px 20px;
 }
-article{
+article {
   border-bottom: 1px solid #ddd;
   margin-bottom: 20px;
 }
 .content {
-overflow: hidden;
-text-overflow:ellipsis;
-white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.el-card{
+  margin: 20px;
 }
 </style>

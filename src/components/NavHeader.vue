@@ -21,6 +21,7 @@
       <el-menu-item index="/article?type=me">我的文章</el-menu-item>
       <el-menu-item index="/user/followee">我的关注</el-menu-item>
       <el-menu-item index="/user/follower">我的粉丝</el-menu-item>
+      <el-menu-item index="/user/friend">朋友圈</el-menu-item>
     </el-submenu>
   </template>
 </el-menu>
